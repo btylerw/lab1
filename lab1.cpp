@@ -27,7 +27,8 @@ public:
 	float dir;
 	float pos[2];
 	double red, green, blue;
-    int frame_count;
+        int frame_count;
+        bool disappear;
 	Global();
 } g;
 
@@ -93,7 +94,8 @@ Global::Global()
 	red = 160;
 	green = 150;
 	blue = 220;
-    frame_count = 0;
+        frame_count = 0;
+        disappear = false;
 }
 
 X11_wrapper::~X11_wrapper()
@@ -275,13 +277,13 @@ void change_color(int bounce)
     // Changes box color more blue if there wasn't a bounce recorded
     if (bounce == 0)
     {
-        g.red-=10;
+        g.red-=20;
         if (g.red < 0)
             g.red = 0;
-        g.blue+=10;
+        g.blue+=20;
         if (g.blue > 255)
             g.blue = 255;
-        g.green-=10;
+        g.green-=20;
         if (g.green < 0)
             g.green = 0;
     }
@@ -289,13 +291,13 @@ void change_color(int bounce)
     // Changes box color more red if there was a bounce recorded
     else
     {
-        g.red+=10;
+        g.red+=20;
         if (g.red > 255)
             g.red = 255;
-        g.blue-=10;
+        g.blue-=20;
         if (g.blue < 0)
             g.blue = 0;
-        g.green-=10;
+        g.green-=20;
         if (g.green < 0)
             g.green = 0;
     }
@@ -309,51 +311,55 @@ void physics()
 	{
 		g.pos[0] = (g.xres - g.w);
 		g.dir = -g.dir;
-        // resets counter, records bounce
-        g.frame_count = 0;
-        change_color(1);
+                // resets counter, records bounce
+                g.frame_count = 0;
+                change_color(1);
 	}
 	if (g.pos[0] <= g.w)
 	{
 		g.pos[0] = g.w;
 		g.dir = -g.dir;
-        // resets counter, records bounce
-        g.frame_count = 0;
-        change_color(1);
+                // resets counter, records bounce
+                g.frame_count = 0;
+                change_color(1);
 	}
 
-    // If frame count reaches 10, continuously turn blue every render
-    if (g.frame_count > 10)
+    // If frame count reaches 20, continuously turn blue every render
+    if (g.frame_count > 20)
     {
-        g.frame_count = 10;
+        g.frame_count = 20;
         change_color(0);
     }
 
-    // If window size becomes smaller than box, change box color to background color (needs testing)
-    if (g.pos[0] > (g.xres - g.w) && g.pos[0] < g.w)
+    // If window size becomes smaller than box, will not draw box
+    if (g.pos[0] >= (g.xres - g.w) && g.pos[0] <= g.w)
     {
-        g.red = 0.1;
-        g.blue = 0.1;
-        g.green = 0.1;
-    }        
+        g.disappear = true;
+    }
+    // Continues to render box when window size becomes larger than box   
+    else
+        g.disappear = false;     
 }
 
 void render()
 {
 	//
 	glClear(GL_COLOR_BUFFER_BIT);
-	// Draw box.
-	glPushMatrix();
-    // Changed function values to variables to automatically update
-	glColor3ub(g.red, g.green, g.blue);
-	glTranslatef(g.pos[0], g.pos[1], 0.0f);
-	glBegin(GL_QUADS);
-	glVertex2f(-g.w, -g.w);
-	glVertex2f(-g.w, g.w);
-	glVertex2f(g.w, g.w);
-	glVertex2f(g.w, -g.w);
-	glEnd();
-	glPopMatrix();
-    // Update frame count every render
-    g.frame_count++;
+	// Draw box so long as window is big enough for box
+        if (!g.disappear)
+        {
+	        glPushMatrix();
+                // Changed function values to variables to automatically update
+	        glColor3ub(g.red, g.green, g.blue);
+	        glTranslatef(g.pos[0], g.pos[1], 0.0f);
+	        glBegin(GL_QUADS);
+	        glVertex2f(-g.w, -g.w);
+	        glVertex2f(-g.w, g.w);
+	        glVertex2f(g.w, g.w);
+	        glVertex2f(g.w, -g.w);
+	        glEnd();
+	        glPopMatrix();
+                // Update frame count every render
+                g.frame_count++;
+        }
 }
