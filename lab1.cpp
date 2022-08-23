@@ -272,6 +272,7 @@ void init_opengl(void)
 
 void change_color(int bounce)
 {
+    // Changes box color more blue if there wasn't a bounce recorded
     if (bounce == 0)
     {
         g.red-=10;
@@ -285,6 +286,7 @@ void change_color(int bounce)
             g.green = 0;
     }
 
+    // Changes box color more red if there was a bounce recorded
     else
     {
         g.red+=10;
@@ -307,6 +309,7 @@ void physics()
 	{
 		g.pos[0] = (g.xres - g.w);
 		g.dir = -g.dir;
+        // resets counter, records bounce
         g.frame_count = 0;
         change_color(1);
 	}
@@ -314,16 +317,19 @@ void physics()
 	{
 		g.pos[0] = g.w;
 		g.dir = -g.dir;
+        // resets counter, records bounce
         g.frame_count = 0;
         change_color(1);
 	}
 
-    if (g.frame_count >= 10)
+    // If frame count reaches 10, continuously turn blue every render
+    if (g.frame_count > 10)
     {
         g.frame_count = 10;
         change_color(0);
     }
 
+    // If window size becomes smaller than box, change box color to background color (needs testing)
     if (g.pos[0] > (g.xres - g.w) && g.pos[0] < g.w)
     {
         g.red = 0.1;
@@ -338,6 +344,7 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT);
 	// Draw box.
 	glPushMatrix();
+    // Changed function values to variables to automatically update
 	glColor3ub(g.red, g.green, g.blue);
 	glTranslatef(g.pos[0], g.pos[1], 0.0f);
 	glBegin(GL_QUADS);
@@ -347,5 +354,6 @@ void render()
 	glVertex2f(g.w, -g.w);
 	glEnd();
 	glPopMatrix();
+    // Update frame count every render
     g.frame_count++;
 }
