@@ -26,7 +26,7 @@ public:
 	float w;
 	float dir;
 	float pos[2];
-	double red, green, blue;
+	int red, green, blue;
         int frame_count;
         bool disappear;
 	Global();
