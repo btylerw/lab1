@@ -253,83 +253,76 @@ void init_opengl(void)
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 }
 
+void check_dir()
+{
+    float new_dir = g.dir;
+    if (new_dir < 0)
+    {
+	new_dir = -new_dir;
+    }
+
+    if (new_dir > 100)
+    {
+	g.faster = false;
+	g.slower = true;
+    }
+
+    else if (new_dir < 5)
+    {
+	g.faster = true;
+	g.slower = false;
+    }
+
+    if (g.faster)
+    {
+	if (g.dir < 0)
+	    g.dir--;
+	else
+	    g.dir++;
+	g.red+=5;
+	if (g.red > 255)
+	    g.red = 255;
+	g.blue-=5;
+	if (g.blue < 0)
+	    g.blue = 0;
+	g.green-=5;
+	if (g.green < 0)
+	    g.green = 0;
+    }
+
+    if (g.slower)
+    {
+	if (g.dir < 0)
+	    g.dir++;
+	else
+	    g.dir--;
+	g.blue+=5;
+	if (g.blue > 255)
+	    g.blue = 255;
+	g.red-=5;
+	if (g.red < 0)
+	    g.red = 0;
+	g.green-=5;
+	if (g.green < 0)
+	    g.green = 0;
+    }
+
+
+}
+
 void physics()
 {
 	g.pos[0] += g.dir;
 	if (g.pos[0] >= (g.xres - g.w)) {
 		g.pos[0] = (g.xres - g.w);
-
-		if (g.faster)
-		{
-	    	    g.dir+=1;
-	    	    g.red+=10;
-	    	    if (g.red > 255)
-	    		g.red = 255;
-	            g.blue-=10;
-            	    if (g.blue < 0)
-	    		g.blue = 0;
-	    	    g.green-=10;
-    	    	    if (g.green < 0)
-	    		g.green = 0;
-		}
-		if (g.slower)
-		{
-	    	    g.dir-=1;
-	    	    g.blue+=10;
-	    	    if (g.blue > 255)
-	    		g.blue = 255;
-	    	    g.red-=10;
-	    	    if (g.red < 0)
-	    		g.red = 0;
-	    	    g.green-=10;
-	    	    if (g.green < 0)
-	    		g.green = 0;
-		}
 		g.dir = -g.dir;
 	}
 	if (g.pos[0] <= g.w) {
 		g.pos[0] = g.w;
-		if (g.faster)
-		{
-	    		g.dir+=1;
-	    		g.red+=10;
-	    		if (g.red > 255)
-	    			g.red = 255;
-	    		g.blue-=10;
-            		if (g.blue < 0)
-	    			g.blue = 0;
-	    		g.green-=10;
-    	    		if (g.green < 0)
-	    			g.green = 0;
-		}
-		if (g.slower)
-		{
-	    	    g.dir-=1;
-	    	    g.blue+=10;
-	    	    if (g.blue > 255)
-	    		g.blue = 255;
-	    	    g.red-=10;
-	   	    if (g.red < 0)
-	    		g.red = 0;
-	    	    g.green-=10;
-	    	    if (g.green < 0)
-	    		g.green = 0;
-		}
 		g.dir = -g.dir;
 	}
 
-	if (g.dir >= 30 || g.dir <= -30)
-	{
-	    g.faster = false;
-	    g.slower = true;
-	}
-
-	else if (g.dir <= 10 || g.dir >= -10)
-	{
-	    g.faster = true;
-	    g.slower = false;
-	}
-
+	check_dir();
 }
 
 void render()
