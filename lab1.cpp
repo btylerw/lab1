@@ -26,8 +26,8 @@ public:
 	float w;
 	float dir;
 	float pos[2];
-	int red, green, blue;
-	bool faster, slower;
+	double red, green, blue;
+    int frame_count;
 	Global();
 } g;
 
@@ -93,8 +93,7 @@ Global::Global()
 	red = 160;
 	green = 150;
 	blue = 220;
-	faster = true;
-	slower = false;
+    frame_count = 0;
 }
 
 X11_wrapper::~X11_wrapper()
@@ -271,66 +270,35 @@ void init_opengl(void)
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 }
 
-void change_speed_color()
+void change_color(int bounce)
 {
-	// Creates temporariy dir variable, and flips to positive if it's currently negative
-	// To accurately adjust speed
-	float new_dir = g.dir;
-	if (new_dir < 0)
-	{
-		new_dir = -new_dir;
-	}
+    if (bounce == 0)
+    {
+        g.red-=10;
+        if (g.red < 0)
+            g.red = 0;
+        g.blue+=10;
+        if (g.blue > 255)
+            g.blue = 255;
+        g.green-=10;
+        if (g.green < 0)
+            g.green = 0;
+    }
 
-	// Moves slower once speed hits 100
-	if (new_dir > 100)
-	{
-		g.faster = false;
-		g.slower = true;
-	}
-
-	// Moves faster once speed hits 1
-	else if (new_dir < 1)
-	{
-		g.faster = true;
-		g.slower = false;
-	}
-
-	// Adjusts speed to move faster, change RGB values to red
-	if (g.faster)
-	{
-		if (g.dir < 0)
-			g.dir--;
-		else
-			g.dir++;
-		g.red += 5;
-		if (g.red > 255)
-			g.red = 255;
-		g.blue -= 5;
-		if (g.blue < 0)
-			g.blue = 0;
-		g.green -= 5;
-		if (g.green < 0)
-			g.green = 0;
-	}
-
-	// Adjusts speed to move slower, change RGB values to blue
-	if (g.slower)
-	{
-		if (g.dir < 0)
-			g.dir++;
-		else
-			g.dir--;
-		g.blue += 5;
-		if (g.blue > 255)
-			g.blue = 255;
-		g.red -= 5;
-		if (g.red < 0)
-			g.red = 0;
-		g.green -= 5;
-		if (g.green < 0)
-			g.green = 0;
-	}
+    else
+    {
+        g.red+=10;
+        if (g.red > 255)
+            g.red = 255;
+        g.blue-=10;
+        if (g.blue < 0)
+            g.blue = 0;
+        g.green-=10;
+        if (g.green < 0)
+            g.green = 0;
+    }
 }
+
 
 void physics()
 {
@@ -339,12 +307,29 @@ void physics()
 	{
 		g.pos[0] = (g.xres - g.w);
 		g.dir = -g.dir;
+        g.frame_count = 0;
+        change_color(1);
 	}
 	if (g.pos[0] <= g.w)
 	{
 		g.pos[0] = g.w;
 		g.dir = -g.dir;
+        g.frame_count = 0;
+        change_color(1);
 	}
+
+    if (g.frame_count >= 10)
+    {
+        g.frame_count = 10;
+        change_color(0);
+    }
+
+    if (g.pos[0] > (g.xres - g.w) && g.pos[0] < g.w)
+    {
+        g.red = 0.1;
+        g.blue = 0.1;
+        g.green = 0.1;
+    }        
 }
 
 void render()
@@ -362,6 +347,5 @@ void render()
 	glVertex2f(g.w, -g.w);
 	glEnd();
 	glPopMatrix();
-	// Changes speed/color after every render
-	change_speed_color();
+    g.frame_count++;
 }
