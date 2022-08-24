@@ -327,18 +327,22 @@ void physics()
                 change_color(1);
 	}
 
+	// Changes y-axis direction if collision with window occurs
 	if (g.pos[1] >= (g.yres - g.w))
 	{
 	    g.pos[1] = (g.yres - g.w);
 	    g.ydir = -g.ydir;
+	    // resets counter, records bounce
 	    g.frame_count = 0;
 	    change_color(1);
 	}
 
+	// Changes y-axis direction if collision with window occurs
 	if (g.pos[1] <= g.w)
 	{
 	    g.pos[1] = g.w;
 	    g.ydir = -g.ydir;
+	    // resets counter, records bounce
 	    g.frame_count = 0;
 	    change_color(1);
 	}
