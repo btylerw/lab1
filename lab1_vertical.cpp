@@ -293,7 +293,7 @@ void change_color(int bounce)
     // Changes box color more red if there was a bounce recorded
     else
     {
-        g.red+=20;
+        g.red+=100;
         if (g.red > 255)
             g.red = 255;
         g.blue-=20;
@@ -343,10 +343,10 @@ void physics()
 	    change_color(1);
 	}
 
-    // If frame count reaches 20, continuously turn blue every render
-    if (g.frame_count > 20)
+    // If frame count reaches 10, continuously turn blue every render
+    if (g.frame_count > 10)
     {
-        g.frame_count = 20;
+        g.frame_count = 10;
         change_color(0);
     }
 
