@@ -305,6 +305,23 @@ void change_color(int bounce)
     }
 }
 
+// Changes size of box (smaller with more frequent bounces, bigger with less frequency)
+void change_size(int value)
+{
+        if (value == 1)
+        {
+                g.w-=5;
+                if (g.w < 10)
+                        g.w = 10;
+        }
+
+        else if (value == 0)
+        {
+                g.w+=5;
+                if (g.w > 100)
+                        g.w = 100;
+        }
+}
 
 void physics()
 {
@@ -317,6 +334,7 @@ void physics()
                 // resets counter, records bounce
                 g.frame_count = 0;
                 change_color(1);
+                change_size(1);
 	}
 	if (g.pos[0] <= g.w)
 	{
@@ -325,6 +343,7 @@ void physics()
                 // resets counter, records bounce
                 g.frame_count = 0;
                 change_color(1);
+                change_size(1);
 	}
 
 	// Changes y-axis direction if collision with window occurs
@@ -335,6 +354,7 @@ void physics()
 	    // resets counter, records bounce
 	    g.frame_count = 0;
 	    change_color(1);
+            change_size(1);
 	}
 
 	// Changes y-axis direction if collision with window occurs
@@ -345,6 +365,7 @@ void physics()
 	    // resets counter, records bounce
 	    g.frame_count = 0;
 	    change_color(1);
+            change_size(1);
 	}
 
     // If frame count reaches 10, continuously turn blue every render
@@ -352,6 +373,7 @@ void physics()
     {
         g.frame_count = 10;
         change_color(0);
+        change_size(0);
     }
 
     // If window size becomes smaller than box, will not draw box
